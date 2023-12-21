@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-import AuthButtonServer from './components/auth-button-server'
+import { AuthButtonClient } from './auth-button-client'
 
-export default async function Home () {
+export default async function AuthButtonServer () {
   const cookieStore = cookies()
 
   const supabase = createServerClient(
@@ -22,15 +22,7 @@ export default async function Home () {
         }
       }
     })
+  const { data: { session } } = await supabase.auth.getSession()
 
-  const { data: posts } = await supabase.from('posts').select('*')
-
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <AuthButtonServer />
-      <pre>
-        {JSON.stringify(posts, null, 2)}
-        </pre>
-    </main>
-  )
+  return <AuthButtonClient session ={session} />
 }
